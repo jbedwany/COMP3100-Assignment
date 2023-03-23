@@ -33,7 +33,7 @@ public class client {
                 String received = fromServer.readLine();
                 System.out.println("RCVD: " + received);
                 if(!received.equals("OK")) {
-                    System.out.println("Unexpected response from server. Quitting.");
+                    System.out.println("Unexpected response from server: " + received + ". Quitting.");
                     socket.close();
                     return;
                 }
@@ -44,13 +44,13 @@ public class client {
                 received = fromServer.readLine();
                 System.out.println("RCVD: " + received);
                 if(!received.equals("OK")) {
-                    System.out.println("Unexpected response from server. Quitting.");
+                    System.out.println("Unexpected response from server: " + received + ". Quitting.");
                     socket.close();
                     return;
                 }
 
             } catch(IOException e) {
-
+                // TODO
             }
 
             socket.close();
