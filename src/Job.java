@@ -1,3 +1,5 @@
+package src;
+
 public class Job {
     public int time;
     public int id;

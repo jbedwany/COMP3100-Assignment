@@ -1,3 +1,5 @@
+package src;
+
 public class Server {
     public String type;
     public int id;
