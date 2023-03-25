@@ -75,6 +75,7 @@
 \fancyfoot[L]{School of Computing, Macquarie University} % Custom footer text
 \fancyfoot[C]{} % Custom footer text
 \fancyfoot[R]{\thepage} % Custom footer text
+\graphicspath{{./images/}}
 
 \usepackage{comment}
 \newcommand{\note}[1]{\marginpar{\scriptsize \textcolor{red}{#1}}} % Enables comments in red on margin
@@ -108,19 +109,48 @@ Github repository link: \url{https://github.com/jbedwany/COMP3100-Assignment}
 %----------------------------------------------------------------------------------------
 \section{Introduction} % 1/2 page
 %Brief introduction of your stage~\cite{mesos2011}.
-
 This project is the creation of a client using the Java programming language for participation in a simulated distributed computing system. The client connects to a provided distributed systems job server, receives 
-information about the available participating servers, then is issued jobs for which it must choose an appropriate server with which the job is then scheduled. The client will utilise the Largest-Round-Robin format 
-for scheduling jobs, where the `largest' (i.e. highest number of cores) type of participant server is identified, then each available server of that type is issued a job in a round-robin fashion.\\
+information about the available participating servers, then is issued jobs for which it must choose an appropriate server with which the job is then scheduled. The client will utilise the Largest-Round-Robin (LRR) format 
+for scheduling jobs, where the `largest' (i.e.\ highest number of cores) type of participant server is identified, then each available server of that type is issued a job in a round-robin fashion.\\
 
-
+This project forms Stage 1 of a larger project. The overall goal of both stages is to develop a functional client which implements multiple scheduling algorithms, to be compared with a number of baseline algorithms 
+such as First Fit,  Best Fit, and Worst Fit. In Stage 1, the primary goal is to develop the baseline client which successfully connects to the \texttt{ds-sim} server provided 
+\href{https://github.com/distsys-MQ/ds-sim}{here} [], correctly parses server information, and schedules jobs identically to the reference \texttt{ds-sim} client (when operating in LRR mode). 
 
 \section{System Overview} % 1/2 page
-The client interacts with \texttt{ds-sim} provided \href{https://github.com/distsys-MQ/ds-sim}{here} [].
-
+The client interacts with the \texttt{ds-sim} server. The interaction can be summarised by 3 stages:\\ %ref
+\begin{enumerate}
+    \item Connection \& Preamble
+    \item Job Generation \& Scheduling
+    \item Termination
+\end{enumerate}
+The below diagram indicates each step of the process. Connection, Authentication, and Parsing Server Info form Stage 1, the loop between Receive Job and Schedule Job form Stage 2, and Quit If None Available forms Stage 3.
+\includegraphics[width=\textwidth]{Workflow.png} % ref? figure caption fosho
+The jobs generated and scheduled are entirely independent of each other \- i.e.\ no job depends on another job being completed first. The only criteria evaluated  %todo
+\pagebreak
 \section{Design} % 1 page
+%design philosophy, considerations and constraints, functionalities of each simulator component focusing on the client-side simulator
+\subsection{Philosophy}
+The major aspect of design philosophy is a focus on simplicity for users and in code architecture. Aside from a number of runtime arguments, namely the server host address, the port, and the user to authenticate as, the 
+person running the simulation does not need to interact with the client for it to function. Programmatically, the code developed focuses on compartmentalising and reusing code where appropriate in order to improve 
+comprehension.
+\subsection{Considerations, Limitations, \& Assumptions}
+Future readability and ease of extension has been the chief consideration in this project, as it forms Stage 1 of a two stage project, and will therefore be built upon in future. Documentation is being created alongside 
+the project in order to facilitate consistency in direction as well as ensure minimal operating details are lost.\\
+The project is limited in that it currently only uses the LRR format for scheduling jobs; whenever any other format is required, this implementation of the client will not be suitable. Additionally, jobs are not scheduled 
+in parallel - any given server that may be able to handle multiple jobs simultaneously are only ever given one at a time.\\
+It has been assumed that no jobs generated require more resources than those of the largest server provided. This is a condition on which the \texttt{ds-sim} server operates and therefore will always be true for the 
+purposes of each simulation, but must be considered when drawing real-world conclusions from simulation data.
+\subsection{Server Simulator}
+The server simulator functions by reading a configuration file which defines properties of servers and jobs that will be dynamically generated. Once the client connects and completes the preamble, the server will generate 
+a job to be scheduled or information regarding the job queue or server statuses. This will repeat for the duration of the simulation.
+\subsection{Client Simulator}
+The client simulator functions by connecting to the server simulator, receiving information about the available servers, then receiving information about the current job to be scheduled. It then makes a scheduling decision 
+based on the available servers and their capacities. Afterwards, it requests a new job to process, and the cycle repeats until the server responds with `NONE', indicating there are no more jobs to be completed. The simulation 
+then ends.
 
 \section{Implementation} % 2 pages
+% talk about job and server objects & OOP in general
 
 
 %----------------------------------------------------------------------------------------
