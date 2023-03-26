@@ -4,24 +4,21 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-
 import src.Job;
 import src.Server;
 
 public class client {
-
     public static void main(String[] args) {
-        // basic usage checking; make this more robust in future
+        // basic usage checking; consider making this more robust in future
         if(args.length < 3) {
             System.out.println("Usage: client.java <ipaddr> <port> <username>");
             return;
         }
-
         String ipaddr = args[0];
         int port = Integer.parseInt(args[1]);
         String user = args[2];
+       
         System.out.println("Connecting to server at " + ipaddr + ":" + port + ".");
- 
         try {
             Socket socket = new Socket(ipaddr, port);
             System.out.println("Connected to server.");
@@ -39,39 +36,46 @@ public class client {
             sendMessage(toServer, "REDY");
             received = receiveMessage(fromServer); 
 
-            int roundRobinIndex = 0;
+            // Main job scheduling functionality
+            int roundRobinIndex = 0; 
             Server[] largestServers = null;
-
-            while(received.substring(0,4).equals("JOBN")) {
-                Job currentJob = new Job(received);
-                
-                // Get details about existing servers
-                if(largestServers == null) {
-                    largestServers = findLargestServer(toServer, fromServer, largestServers);
-                }
-
-                try {
-                    sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type);
-                    if(++roundRobinIndex >= largestServers.length) {
-                        roundRobinIndex = 0;
+            while(!received.substring(0,4).equals("NONE")) {
+                if(received.substring(0,4).equals("JOBN")) {
+                    Job currentJob = new Job(received);
+                    
+                    // Get server details, find largest type
+                    if(largestServers == null) {
+                        largestServers = findLargestServer(toServer, fromServer, largestServers);
                     }
-                    received = receiveMessage(fromServer);
-                } catch(NullPointerException e) {
-                    System.out.println("curses " + e);
+
+                    // Schedule jobs with the 
+                    try {
+                        sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
+                        if(++roundRobinIndex >= largestServers.length) {
+                            roundRobinIndex = 0;
+                        }
+                        received = receiveMessage(fromServer);
+                    } catch(NullPointerException e) {
+                        System.out.println("Something went wrong with identifying the largest server type: " + e); // consider rewriting exception messages
+                        break;
+                    }
+                    // Request next job command
+                    sendMessage(toServer, "REDY");
+                    received = receiveMessage(fromServer); 
+                } else if(received.substring(0,4).equals("JCPL")) {
+                    sendMessage(toServer, "REDY");
+                    received = receiveMessage(fromServer); 
                 }
-                sendMessage(toServer, "REDY");
-                received = receiveMessage(fromServer); 
             }
 
+            // terminate connection
             sendMessage(toServer, "QUIT");
             received = receiveMessage(fromServer);
-
-
             toServer.close();
             fromServer.close();
             socket.close();
         } catch(IOException e) {
-            System.out.println("Error creating socket: " + e);
+            System.out.println("Error creating socket: " + e);  // consider rewriting exception messages
         }
     }
 
