@@ -1,9 +1,12 @@
-package src;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+
+import src.Job;
+import src.Server;
 
 public class client {
 
@@ -23,7 +26,6 @@ public class client {
             Socket socket = new Socket(ipaddr, port);
             System.out.println("Connected to server.");
 
-
             BufferedReader fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             DataOutputStream toServer = new DataOutputStream(socket.getOutputStream());
 
@@ -35,45 +37,34 @@ public class client {
             received = receiveMessage(fromServer);
 
             sendMessage(toServer, "REDY");
-            received = receiveMessage(fromServer);
-            Job currentJob = new Job(received);
+            received = receiveMessage(fromServer); 
 
-            // Get details about existing servers
-            sendMessage(toServer, "GETS All");
-            received = receiveMessage(fromServer);
-            int numServers = Integer.parseInt(received.split(" ")[1]);
-            Server[] servers = new Server[numServers];
-            System.out.println("Number of servers: " + numServers);
-            sendMessage(toServer, "OK");
-            String largestServer = "";
-            for(int i = 0; i < numServers; i++) {
-                int maxCores = 0;
-                received = receiveMessage(fromServer);
-                servers[i] = new Server(received);
-                if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
-                    maxCores = servers[i].cores; 
-                    largestServer = servers[i].type; 
+            int roundRobinIndex = 0;
+            Server[] largestServers = null;
+
+            while(received.substring(0,4).equals("JOBN")) {
+                Job currentJob = new Job(received);
+                
+                // Get details about existing servers
+                if(largestServers == null) {
+                    largestServers = findLargestServer(toServer, fromServer, largestServers);
                 }
-            }
-            sendMessage(toServer, "OK");
-            System.out.println("Largest server type: " + largestServer);
 
-
-            for(int i = 0; i < servers.length; i++) {
-                if(currentJob.cores > servers[i].cores || currentJob.mem > servers[i].mem || currentJob.disk > servers[i].disk) {
-                    continue;
-                }
-                else {
-                    sendMessage(toServer, "SCHD " + currentJob.id + " " + servers[i].type);
+                try {
+                    sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type);
+                    if(++roundRobinIndex >= largestServers.length) {
+                        roundRobinIndex = 0;
+                    }
                     received = receiveMessage(fromServer);
-                    break;
+                } catch(NullPointerException e) {
+                    System.out.println("curses " + e);
                 }
+                sendMessage(toServer, "REDY");
+                received = receiveMessage(fromServer); 
             }
 
-            if(!received.equals("OK")) {
-                sendMessage(toServer, "QUIT");
-                received = receiveMessage(fromServer);
-            }
+            sendMessage(toServer, "QUIT");
+            received = receiveMessage(fromServer);
 
 
             toServer.close();
@@ -84,6 +75,7 @@ public class client {
         }
     }
 
+    // Helper functions
     static void sendMessage(DataOutputStream toServer, String message) {
         try {
             toServer.write((message + "\n").getBytes());
@@ -103,5 +95,41 @@ public class client {
             System.out.println("Exception when reading message: " + e);
             return null;
         }
+    }
+
+    static Server[] findLargestServer(DataOutputStream toServer, BufferedReader fromServer, Server[] largestServers) {
+        sendMessage(toServer, "GETS All");
+        String received = receiveMessage(fromServer);
+        int numServers = Integer.parseInt(received.split(" ")[1]);
+        Server[] servers = new Server[numServers]; //arraylist not reused because it would resize with each element being added; less efficient than resizing once - discuss in tex
+        sendMessage(toServer, "OK");
+        System.out.println("Finding largest server.");
+        int maxCores = 0;
+        String largestServer = "";
+        int numLargest = 0;
+
+        for(int i = 0; i < numServers; i++) {
+            received = receiveMessage(fromServer);
+            servers[i] = new Server(received);
+            if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
+                maxCores = servers[i].cores; 
+                largestServer = servers[i].type; 
+                numLargest = 0;
+            }
+            if(servers[i].type.equals(largestServer)) {
+                numLargest++;
+            }
+        }
+
+        largestServers = new Server[numLargest];
+        int largestServersArrayIndex = 0;                   // added to avoid looping through the new array to find the next empty element each time an element is being added
+        for(int i = 0; i < numServers; i++) {
+            if(servers[i].type.equals(largestServer) && servers[i].state.equals("inactive")) {
+                largestServers[largestServersArrayIndex++] = servers[i];
+            }
+        }
+        sendMessage(toServer, "OK");
+        received = receiveMessage(fromServer);
+        return largestServers;
     }
 }
