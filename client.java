@@ -48,7 +48,7 @@ public class client {
                         largestServers = findLargestServer(toServer, fromServer, largestServers);
                     }
 
-                    // Schedule jobs with the 
+                    // Schedule jobs using LRR
                     try {
                         sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
                         if(++roundRobinIndex >= largestServers.length) {

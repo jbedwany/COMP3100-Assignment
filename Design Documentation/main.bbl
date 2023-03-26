@@ -1,3 +1,6 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{1}
+
+\bibitem{javadoc}
+{Sun Microsystems}, {\em The Java Language Environment}, 1999.
 
 \end{thebibliography}

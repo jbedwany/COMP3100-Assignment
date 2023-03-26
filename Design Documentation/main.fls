@@ -1314,12 +1314,15 @@ INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\vf\bitstrea\charter\bchb7t.vf
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\bchb8r.tfm
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\bchb7t.tfm
-INPUT .\main.bbl
-INPUT main.bbl
-INPUT .\main.bbl
-INPUT main.bbl
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\vf\bitstrea\charter\bchb7t.vf
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\bchb8r.tfm
+INPUT .\main.bbl
+INPUT main.bbl
+INPUT .\main.bbl
+INPUT main.bbl
+INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\bchri7t.tfm
+INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\vf\bitstrea\charter\bchri7t.vf
+INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\tfm\bitstrea\charter\bchri8r.tfm
 INPUT main.aux
 INPUT .\main.out
 INPUT .\main.out
@@ -1328,5 +1331,7 @@ INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charte
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charter\bchb8a.pfb
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charter\bchr8a.pfb
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charter\bchr8a.pfb
+INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charter\bchri8a.pfb
+INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\bitstrea\charter\bchri8a.pfb
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb
 INPUT C:\Users\justinb\AppData\Local\Programs\MiKTeX\fonts\type1\public\amsfonts\cm\cmtt10.pfb

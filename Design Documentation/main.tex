@@ -118,7 +118,7 @@ such as First Fit,  Best Fit, and Worst Fit. In Stage 1, the primary goal is to 
 \href{https://github.com/distsys-MQ/ds-sim}{here} [], correctly parses server information, and schedules jobs identically to the reference \texttt{ds-sim} client (when operating in LRR mode). 
 
 \section{System Overview} % 1/2 page
-The client interacts with the \texttt{ds-sim} server. The interaction can be summarised by 3 stages:\\ %ref
+The client interacts with the \texttt{ds-sim} server. The interaction can be summarised by 3 stages: \\
 \begin{enumerate}
     \item Connection \& Preamble
     \item Job Generation \& Scheduling
@@ -126,19 +126,20 @@ The client interacts with the \texttt{ds-sim} server. The interaction can be sum
 \end{enumerate}
 The below diagram indicates each step of the process. Connection, Authentication, and Parsing Server Info form Stage 1, the loop between Receive Job and Schedule Job form Stage 2, and Quit If None Available forms Stage 3.
 \includegraphics[width=\textwidth]{Workflow.png} % ref? figure caption fosho
-The jobs generated and scheduled are entirely independent of each other \- i.e.\ no job depends on another job being completed first. The only criteria evaluated  %todo
+The jobs generated and scheduled are entirely independent of each other --- i.e.\ no job depends on another job being completed first. The only criteria evaluated  %todo
+
 \pagebreak
 \section{Design} % 1 page
 %design philosophy, considerations and constraints, functionalities of each simulator component focusing on the client-side simulator
 \subsection{Philosophy}
 The major aspect of design philosophy is a focus on simplicity for users and in code architecture. Aside from a number of runtime arguments, namely the server host address, the port, and the user to authenticate as, the 
-person running the simulation does not need to interact with the client for it to function. Programmatically, the code developed focuses on compartmentalising and reusing code where appropriate in order to improve 
-comprehension.
+person running the simulation does not need to interact with the client for it to function. Programmatically, the code developed utilises the DRY (Don't Repeat Yourself) principle by compartmentalising and reusing code 
+where appropriate in order to improve comprehension and maintenance.
 \subsection{Considerations, Limitations, \& Assumptions}
 Future readability and ease of extension has been the chief consideration in this project, as it forms Stage 1 of a two stage project, and will therefore be built upon in future. Documentation is being created alongside 
 the project in order to facilitate consistency in direction as well as ensure minimal operating details are lost.\\
 The project is limited in that it currently only uses the LRR format for scheduling jobs; whenever any other format is required, this implementation of the client will not be suitable. Additionally, jobs are not scheduled 
-in parallel - any given server that may be able to handle multiple jobs simultaneously are only ever given one at a time.\\
+in parallel --- any given server that may be able to handle multiple jobs simultaneously are only ever given one at a time.\\
 It has been assumed that no jobs generated require more resources than those of the largest server provided. This is a condition on which the \texttt{ds-sim} server operates and therefore will always be true for the 
 purposes of each simulation, but must be considered when drawing real-world conclusions from simulation data.
 \subsection{Server Simulator}
@@ -150,6 +151,30 @@ based on the available servers and their capacities. Afterwards, it requests a n
 then ends.
 
 \section{Implementation} % 2 pages
+A number of key decisions have been made as part of this implementation. Structurally, the code is separated into the following sections:
+\begin{enumerate}
+    \item Input Validation
+    \item Connection to Server
+    \item Identification of Largest Server Type
+    \item Scheduling of Job
+    \item Connection Termination
+    \item Helper Functions
+\end{enumerate}
+It also makes use of two custom-defined classes, Job and Server. 
+\subsection{Object-Oriented Programming}
+Java is an Object-Oriented Programming language, which means it is designed to handle complex data structures through the definition of classes\ \cite{javadoc}. This is relevant for this project, because each job and server 
+provided by the \texttt{ds-sim} server contains multiple data fields, and in the case of the servers, multiple data types (strings e.g.\ server type and integers e.g.\ server ID). There are a number of ways to handle this, 
+such as multi-dimensional arrays (e.g.\ one dimension for each job, and one dimension for each field within each job), however being a strongly typed language, arrays containing multiple datatypes are not possible --- which 
+is an issue for keeping track of the servers involved.\\
+Instead, by defining a class each for Job and Server, we can cleanly unite all the relevant fields within a single object for both jobs and servers, and we get a bonus of being able to include as a built-in function of 
+those objects for parsing the strings received from the \texttt{ds-sim} server declaring each job or server. This allows us to keep the main program clean and easy to read, both through modularisation of code functions 
+as well as simplifying data structures in use, but also provides scalability options --- for example, when implementing an alternative method for determining which server to schedule which job on, a comparison function can 
+be trivially included within the job or server class definition to allow comparing jobs requirements with server capabilities.
+
+\subsection{}
+
+% brief description of any implementation specific information including technologies, techniques, software libraries and data structures used. How each of components/functions
+% of your simulator is implemented
 % talk about job and server objects & OOP in general
 
 
@@ -158,8 +183,24 @@ then ends.
 %----------------------------------------------------------------------------------------
 \bibliographystyle{ieeetr}
 \bibliography{comp3100project}
-% \printbibliography
-
 %----------------------------------------------------------------------------------------
-
 \end{document}
+
+
+
+% String largestServer = "";
+% int maxCores = 0;
+% int numLargest = 0;
+
+% for(int i = 0; i < numServers; i++) {
+%     received = receiveMessage(fromServer);
+%     servers[i] = new Server(received);
+%     if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
+%         maxCores = servers[i].cores; 
+%         largestServer = servers[i].type; 
+%         numLargest = 0;
+%     }
+%     if(servers[i].type.equals(largestServer)) {
+%         numLargest++;
+%     }
+% }

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2023.2.22)  25 MAR 2023 13:15
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2023.2.22)  26 MAR 2023 16:36
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -988,33 +988,29 @@ Underfull \hbox (badness 10000) in paragraph at lines 121--122
 
  []
 
-<./images//Workflow.png, id=40, 1204.5pt x 338.26375pt>
+<./images//Workflow.png, id=48, 1204.5pt x 338.26375pt>
 File: ./images//Workflow.png Graphic file (type png)
 <use ./images//Workflow.png>
 Package pdftex.def Info: ./images//Workflow.png  used on input line 128.
 (pdftex.def)             Requested size: 473.0374pt x 132.84622pt.
 [1
 
-{C:/Users/justinb/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <./images//Workflow.png>] (main.bbl
-
-LaTeX Warning: Empty `thebibliography' environment on input line 3.
-
-) [2] (main.aux)
+{C:/Users/justinb/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <./images//Workflow.png>] [2] (main.bbl) [3] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1C067509F7C2E83C3C33723E26162118;1076.
+(rerunfilecheck)             Checksum: 695A4F3BEDA72AC7DB52B0F0FF5F684B;1321.
  ) 
 Here is how much of TeX's memory you used:
- 31391 strings out of 475385
- 604209 string characters out of 2775963
- 995294 words of memory out of 3000000
- 52062 multiletter control sequences out of 15000+600000
- 486666 words of font info for 105 fonts, out of 8000000 for 9000
+ 31435 strings out of 475385
+ 604643 string characters out of 2775963
+ 996326 words of memory out of 3000000
+ 52068 multiletter control sequences out of 15000+600000
+ 490584 words of font info for 123 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,11n,94p,1109b,510s stack positions out of 10000i,1000n,20000p,200000b,80000s
-{C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}<C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchb8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchr8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (2 pages, 71046 bytes).
+ 99i,11n,94p,1109b,512s stack positions out of 10000i,1000n,20000p,200000b,80000s
+{C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}<C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchb8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchr8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchri8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on main.pdf (3 pages, 87814 bytes).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
- 15 named destinations out of 1000 (max. 500000)
- 20562 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 106 PDF objects out of 1000 (max. 8388607)
+ 25 named destinations out of 1000 (max. 500000)
+ 24674 words of extra memory for PDF output out of 24883 (max. 10000000)
 
