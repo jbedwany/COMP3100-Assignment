@@ -171,7 +171,21 @@ those objects for parsing the strings received from the \texttt{ds-sim} server d
 as well as simplifying data structures in use, but also provides scalability options --- for example, when implementing an alternative method for determining which server to schedule which job on, a comparison function can 
 be trivially included within the job or server class definition to allow comparing jobs requirements with server capabilities.
 
-\subsection{}
+\subsection{Job Scheduling}
+The client schedules jobs based on a Largest Round-Robin format. After connecting to the \texttt{ds-sim} server, it retrieves the list of available servers using the \texttt{GETS All} command. It parses the results of this 
+command in order to determine the available servers, and identifies the largest server based on the amount of cores each has. The provided server list does not need to be sorted in order of server size to accurately 
+determine the largest server type. After the largest server type is identified, it creates a list of them, then as each JOBN command is received from the \texttt{ds-sim} server, it iterates through this list with each 
+server having a turn completing a job, then repeats from the start. This continues until the \texttt{ds-sim} server issues the 'NONE' command, indicating there are no jobs left to be processed. 
+It then terminates the connection.
+
+\subsection{Helper Functions}
+A number of helper functions have been created in order to keep the main logic of the program clean and easy to read. As message sending and receiving is done in the same way repeatedly throughout the program, including 
+message logging, they have been converted into functions.\\
+As the methodology of finding the largest server is somewhat cumbersome, it has been separated into its own helper function. First, it issues and receives the data. It uses array data structures throughout instead of 
+ArrayLists, which have convenient built-in functionality of being able to be resized (as compared to Arrays which cannot be, and must have new arrays of the correct size redeclared). This would have been used to potentially 
+simply remove the elements of the servers list that were not needed (i.e.\ not of the largest type) and retain the same data structure, thereby reducing overhead. However, the implementation of ArrayLists is such that 
+appending an element to the list is done by creating a new array of the correct size and moving the elements across with the new element at the end. As numerous elements are added to the array iteratively, it is therefore 
+much more efficient to simply create a new array containing only the largest servers.
 
 % brief description of any implementation specific information including technologies, techniques, software libraries and data structures used. How each of components/functions
 % of your simulator is implemented
@@ -185,22 +199,3 @@ be trivially included within the job or server class definition to allow compari
 \bibliography{comp3100project}
 %----------------------------------------------------------------------------------------
 \end{document}
-
-
-
-% String largestServer = "";
-% int maxCores = 0;
-% int numLargest = 0;
-
-% for(int i = 0; i < numServers; i++) {
-%     received = receiveMessage(fromServer);
-%     servers[i] = new Server(received);
-%     if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
-%         maxCores = servers[i].cores; 
-%         largestServer = servers[i].type; 
-%         numLargest = 0;
-%     }
-%     if(servers[i].type.equals(largestServer)) {
-%         numLargest++;
-%     }
-% }

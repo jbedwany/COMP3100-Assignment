@@ -45,7 +45,7 @@ public class client {
                     
                     // Get server details, find largest type
                     if(largestServers == null) {
-                        largestServers = findLargestServer(toServer, fromServer, largestServers);
+                        largestServers = findLargestServer(toServer, fromServer);
                     }
 
                     // Schedule jobs using LRR
@@ -101,17 +101,18 @@ public class client {
         }
     }
 
-    static Server[] findLargestServer(DataOutputStream toServer, BufferedReader fromServer, Server[] largestServers) {
+    static Server[] findLargestServer(DataOutputStream toServer, BufferedReader fromServer) {
         sendMessage(toServer, "GETS All");
         String received = receiveMessage(fromServer);
         int numServers = Integer.parseInt(received.split(" ")[1]);
-        Server[] servers = new Server[numServers]; //arraylist not reused because it would resize with each element being added; less efficient than resizing once - discuss in tex
+        Server[] servers = new Server[numServers];
         sendMessage(toServer, "OK");
         System.out.println("Finding largest server.");
         int maxCores = 0;
         String largestServer = "";
         int numLargest = 0;
-
+        
+        // Identify largest type
         for(int i = 0; i < numServers; i++) {
             received = receiveMessage(fromServer);
             servers[i] = new Server(received);
@@ -124,8 +125,8 @@ public class client {
                 numLargest++;
             }
         }
-
-        largestServers = new Server[numLargest];
+        // Create list of largest servers
+        Server[] largestServers = new Server[numLargest];
         int largestServersArrayIndex = 0;                   // added to avoid looping through the new array to find the next empty element each time an element is being added
         for(int i = 0; i < numServers; i++) {
             if(servers[i].type.equals(largestServer) && servers[i].state.equals("inactive")) {
@@ -133,7 +134,7 @@ public class client {
             }
         }
         sendMessage(toServer, "OK");
-        received = receiveMessage(fromServer);
+        receiveMessage(fromServer); // is this necessary? test
         return largestServers;
     }
 }
