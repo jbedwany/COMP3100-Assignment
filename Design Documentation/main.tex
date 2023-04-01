@@ -125,8 +125,13 @@ The client interacts with the \texttt{ds-sim} server. The interaction can be sum
     \item Termination
 \end{enumerate}
 The below diagram indicates each step of the process. Connection, Authentication, and Parsing Server Info form Stage 1, the loop between Receive Job and Schedule Job form Stage 2, and Quit If None Available forms Stage 3.
-\includegraphics[width=\textwidth]{Workflow.png} % ref? figure caption fosho
-The jobs generated and scheduled are entirely independent of each other --- i.e.\ no job depends on another job being completed first. The only criteria evaluated  %todo
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{Workflow.png}
+    \caption{Process Outline}
+\end{figure}\\
+The jobs generated and scheduled are entirely independent of each other --- i.e.\ no job depends on another job being completed first. Due to the guarantee within the specification that no job will require more resources 
+than those of the largest server type, no capability checking is performed prior to issuing each job to each server.
 
 \pagebreak
 \section{Design} % 1 page
@@ -149,6 +154,12 @@ a job to be scheduled or information regarding the job queue or server statuses.
 The client simulator functions by connecting to the server simulator, receiving information about the available servers, then receiving information about the current job to be scheduled. It then makes a scheduling decision 
 based on the available servers and their capacities. Afterwards, it requests a new job to process, and the cycle repeats until the server responds with `NONE', indicating there are no more jobs to be completed. The simulation 
 then ends.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=8cm]{System Structure.png}
+    \caption{System Structure}
+\end{figure}
 
 \pagebreak
 \section{Implementation} % 2 pages
@@ -176,7 +187,7 @@ be trivially included within the job or server class definition to allow compari
 The client schedules jobs based on a Largest Round-Robin format. After connecting to the \texttt{ds-sim} server, it retrieves the list of available servers using the \texttt{GETS All} command. It parses the results of this 
 command in order to determine the available servers, and identifies the largest server based on the amount of cores each has. The provided server list does not need to be sorted in order of server size to accurately 
 determine the largest server type. After the largest server type is identified, it creates a list of them, then as each JOBN command is received from the \texttt{ds-sim} server, it iterates through this list with each 
-server having a turn completing a job, then repeats from the start. This continues until the \texttt{ds-sim} server issues the 'NONE' command, indicating there are no jobs left to be processed. 
+server having a turn completing a job, then repeats from the start. This continues until the \texttt{ds-sim} server issues the \texttt{NONE} command, indicating there are no jobs left to be processed. 
 It then terminates the connection.
 
 \subsection{Helper Functions}
