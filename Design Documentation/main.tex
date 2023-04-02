@@ -108,14 +108,13 @@ Github repository link: \url{https://github.com/jbedwany/COMP3100-Assignment}
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 \section{Introduction} % 1/2 page
-%Brief introduction of your stage~\cite{mesos2011}.
 This project is the creation of a client using the Java programming language for participation in a simulated distributed computing system. The client connects to a provided distributed systems job server, receives 
 information about the available participating servers, then is issued jobs for which it must choose an appropriate server with which the job is then scheduled. The client will utilise the Largest-Round-Robin (LRR) format 
 for scheduling jobs, where the `largest' (i.e.\ highest number of cores) type of participant server is identified, then each available server of that type is issued a job in a round-robin fashion.\\
 
 This project forms Stage 1 of a larger project. The overall goal of both stages is to develop a functional client which implements multiple scheduling algorithms, to be compared with a number of baseline algorithms 
 such as First Fit,  Best Fit, and Worst Fit. In Stage 1, the primary goal is to develop the baseline client which successfully connects to the \texttt{ds-sim} server provided 
-\href{https://github.com/distsys-MQ/ds-sim}{here} [], correctly parses server information, and schedules jobs identically to the reference \texttt{ds-sim} client (when operating in LRR mode). 
+\href{https://github.com/distsys-MQ/ds-sim}{here} \cite{github}, correctly parses server information, and schedules jobs identically to the reference \texttt{ds-sim} client (when operating in LRR mode). 
 
 \section{System Overview} % 1/2 page
 The client interacts with the \texttt{ds-sim} server. The interaction can be summarised by 3 stages: \\

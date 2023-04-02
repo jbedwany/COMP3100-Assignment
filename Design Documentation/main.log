@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2023.2.22)  1 APR 2023 23:28
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.10) (preloaded format=pdflatex 2023.2.22)  1 APR 2023 23:44
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -979,44 +979,44 @@ LaTeX Font Info:    Trying to load font information for U+wasy on input line 101
  (C:\Users\justinb\AppData\Local\Programs\MiKTeX\tex/latex/wasysym\uwasy.fd
 File: uwasy.fd 2020/01/19 v2.4 Wasy-2 symbol font definitions
 )
-Underfull \hbox (badness 10000) in paragraph at lines 112--115
+Underfull \hbox (badness 10000) in paragraph at lines 111--114
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 121--122
+Underfull \hbox (badness 10000) in paragraph at lines 120--121
 
  []
 
-<./images//Workflow.png, id=52, 1204.5pt x 338.26375pt>
+<./images//Workflow.png, id=53, 1204.5pt x 338.26375pt>
 File: ./images//Workflow.png Graphic file (type png)
 <use ./images//Workflow.png>
-Package pdftex.def Info: ./images//Workflow.png  used on input line 130.
+Package pdftex.def Info: ./images//Workflow.png  used on input line 129.
 (pdftex.def)             Requested size: 473.0374pt x 132.84622pt.
 [1
 
 {C:/Users/justinb/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map} <./images//Workflow.png>]
-<./images//System Structure.png, id=67, 418.26262pt x 233.07076pt>
+<./images//System Structure.png, id=69, 418.26262pt x 233.07076pt>
 File: ./images//System Structure.png Graphic file (type png)
 <use ./images//System Structure.png>
-Package pdftex.def Info: ./images//System Structure.png  used on input line 160.
+Package pdftex.def Info: ./images//System Structure.png  used on input line 159.
 (pdftex.def)             Requested size: 408.49686pt x 227.62204pt.
  [2 <./images//System Structure.png>] (main.bbl [3]) [4] (main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 37DAC4E8DF2E9815D6F176D43994418E;1543.
  ) 
 Here is how much of TeX's memory you used:
- 31469 strings out of 475385
- 605159 string characters out of 2775963
- 996326 words of memory out of 3000000
- 52079 multiletter control sequences out of 15000+600000
+ 31475 strings out of 475385
+ 605224 string characters out of 2775963
+ 996354 words of memory out of 3000000
+ 52084 multiletter control sequences out of 15000+600000
  492072 words of font info for 135 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 99i,11n,94p,1109b,651s stack positions out of 10000i,1000n,20000p,200000b,80000s
+ 99i,11n,94p,1109b,655s stack positions out of 10000i,1000n,20000p,200000b,80000s
 {C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/base/8r.enc}<C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchb8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchr8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/bitstrea/charter/bchri8a.pfb><C:/Users/justinb/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on main.pdf (4 pages, 108032 bytes).
+Output written on main.pdf (4 pages, 109285 bytes).
 PDF statistics:
- 118 PDF objects out of 1000 (max. 8388607)
- 29 named destinations out of 1000 (max. 500000)
+ 121 PDF objects out of 1000 (max. 8388607)
+ 30 named destinations out of 1000 (max. 500000)
  24687 words of extra memory for PDF output out of 24883 (max. 10000000)
 

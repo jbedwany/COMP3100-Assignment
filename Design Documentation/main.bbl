@@ -1,5 +1,9 @@
 \begin{thebibliography}{1}
 
+\bibitem{github}
+J.~Bedwany, ``Comp3100-assignment.''
+  \url{https://github.com/jbedwany/COMP3100-Assignment}, 2023.
+
 \bibitem{javadoc}
 {Sun Microsystems}, {\em The Java Language Environment}, 1999.
 
