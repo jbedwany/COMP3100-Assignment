@@ -12,9 +12,9 @@ git clone https://github.com/jbedwany/COMP3100-Assignment
 ```
 git clone https://github.com/distsys-MQ/ds-sim
 ```
-* Compile the classes if necessary:
+* Recompile the classes if necessary:
 ```
-javac COMP3100-Assignment/src/*.java COMP3100-Assignment/client.java
+javac COMP3100-Assignment/src/*.java
 ```
 * Run the ds-sim server with the config file of your choosing. Make sure to include the -n flag to allow proper reading of newlines.
 ```
@@ -23,7 +23,7 @@ ds-sim/src/pre-compiled/ds-server localhost 50000 -n -c ds-sim/configs/sample-co
 * Open a new terminal window and run this client with the IP, port, and user to authenticate as. Note in the below example, 'n' is the user.
 ```
 cd COMP3100-Assignment
-java client localhost 50000 n
+java src.Client localhost 50000 n
 ```
 ## Author
 Justin Bedwany 46598634
