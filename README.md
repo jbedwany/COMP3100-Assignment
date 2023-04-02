@@ -20,7 +20,7 @@ javac COMP3100-Assignment/src/*.java COMP3100-Assignment/client.java
 ```
 ds-sim/src/pre-compiled/ds-server localhost 50000 -n -c ds-sim/configs/sample-configs/sample-config01.xml
 ```
-* Run this client with the IP, port, and user to authenticate as. Note in the below example, 'n' is the user.
+* Open a new terminal window and run this client with the IP, port, and user to authenticate as. Note in the below example, 'n' is the user.
 ```
 cd COMP3100-Assignment
 java client localhost 50000 n

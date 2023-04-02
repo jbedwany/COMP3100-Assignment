@@ -1,15 +1,13 @@
-
+package src;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import src.Job;
-import src.Server;
 
-public class client {
+public class Client {
     public static void main(String[] args) {
-        // basic usage checking; consider making this more robust in future
+        // basic usage checking
         if(args.length < 3) {
             System.out.println("Usage: client.java <ipaddr> <port> <username>");
             return;
@@ -56,7 +54,7 @@ public class client {
                         }
                         received = receiveMessage(fromServer);
                     } catch(NullPointerException e) {
-                        System.out.println("Something went wrong with identifying the largest server type: " + e); // consider rewriting exception messages
+                        System.out.println("Something went wrong with identifying the largest server type: " + e);
                         break;
                     }
                     // Request next job command
@@ -75,7 +73,7 @@ public class client {
             fromServer.close();
             socket.close();
         } catch(IOException e) {
-            System.out.println("Error creating socket: " + e);  // consider rewriting exception messages
+            System.out.println("Error creating socket: " + e); 
         }
     }
 
@@ -134,7 +132,7 @@ public class client {
             }
         }
         sendMessage(toServer, "OK");
-        receiveMessage(fromServer); // is this necessary? test
+        receiveMessage(fromServer);
         return largestServers;
     }
 }
