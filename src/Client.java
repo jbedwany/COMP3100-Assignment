@@ -15,6 +15,12 @@ public class Client {
         String ipaddr = args[0];
         int port = Integer.parseInt(args[1]);
         String user = args[2];
+        String mode = "lrr";
+        if(args.length == 5) {
+            if("-a".equals(args[3])) {
+                mode = args[4];
+            }
+        }
        
         System.out.println("Connecting to server at " + ipaddr + ":" + port + ".");
         try {
@@ -40,26 +46,14 @@ public class Client {
             while(!received.substring(0,4).equals("NONE")) {
                 if(received.substring(0,4).equals("JOBN")) {
                     Job currentJob = new Job(received);
-                    
-                    // Get server details, find largest type
-                    if(largestServers == null) {
-                        largestServers = findLargestServer(toServer, fromServer);
+                    if("lrr".equals(mode)) {
+                        scheduleLRR();
+                    } else if("fc".equals(mode)) {
+                        System.out.println("fc mode");
+                        // scheduleFC();
                     }
 
-                    // Schedule jobs using LRR
-                    try {
-                        sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
-                        if(++roundRobinIndex >= largestServers.length) {
-                            roundRobinIndex = 0;
-                        }
-                        received = receiveMessage(fromServer);
-                    } catch(NullPointerException e) {
-                        System.out.println("Something went wrong with identifying the largest server type: " + e);
-                        break;
-                    }
-                    // Request next job command
-                    sendMessage(toServer, "REDY");
-                    received = receiveMessage(fromServer); 
+
                 } else if(received.substring(0,4).equals("JCPL")) {
                     sendMessage(toServer, "REDY");
                     received = receiveMessage(fromServer); 
@@ -135,4 +129,39 @@ public class Client {
         receiveMessage(fromServer);
         return largestServers;
     }
+
+
+    static void scheduleLRR() {
+        // Get server details, find largest type
+        if(largestServers == null) {
+            largestServers = findLargestServer(toServer, fromServer);
+        }
+        // Schedule jobs using LRR
+        try {
+            sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
+            if(++roundRobinIndex >= largestServers.length) {
+                roundRobinIndex = 0;
+            }
+            received = receiveMessage(fromServer);
+        } catch(NullPointerException e) {
+            System.out.println("Something went wrong with identifying the largest server type: " + e);
+            break;
+        }
+        // Request next job command
+        sendMessage(toServer, "REDY");
+        received = receiveMessage(fromServer); 
+    }
+
+    static void scheduleFC() {
+            sendMessage(toServer, "GETS Capable " + currentJob.cores + " " + currentJob.mem + " " + currentJob.disk);
+            receiveMessage(fromServer);
+            sendMessage(toServer, "OK");
+            received = receiveMessage(fromServer);
+            fromServer.flush();
+            sendMessage(toServer, "OK");
+            Server firstCapable = new Server(received);
+            sendMessage(toServer, "SCHD " + currentJob.id + " " + firstCapable.type + " " + firstCapable.id);
+            receiveMessage(fromServer);
+    }
+
 }
