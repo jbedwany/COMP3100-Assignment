@@ -4,6 +4,7 @@ This project implements a client to interact with a simulated distributed system
 
 ### Running the Simulation
 
+Due to some Java build path weirdness there are some specific instructions to follow to run the demo.
 * Clone this repository:
 ```
 git clone https://github.com/jbedwany/COMP3100-Assignment
@@ -12,18 +13,26 @@ git clone https://github.com/jbedwany/COMP3100-Assignment
 ```
 git clone https://github.com/distsys-MQ/ds-sim
 ```
+* Enter the src directory:
+```
+cd COMP3100-Assignment/src/
+```
+* Copy the reference client + server to the directory:
+```
+cp ../../ds-sim/src/pre-compiled/ds-* .
+```
 * Recompile the classes if necessary:
 ```
-javac COMP3100-Assignment/src/*.java
+javac Job.java Server.java
 ```
-* Run the ds-sim server with the config file of your choosing. Make sure to include the -n flag to allow proper reading of newlines.
+* Unpack the test suite:
 ```
-ds-sim/src/pre-compiled/ds-server localhost 50000 -n -c ds-sim/configs/sample-configs/sample-config01.xml
+tar xvf S2TestScript.tar
 ```
-* Open a new terminal window and run this client with the IP, port, and user to authenticate as. Note in the below example, 'n' is the user.
+* Run the test suite:
 ```
-cd COMP3100-Assignment
-java src.Client localhost 50000 n
+python3 s2_test.py "java App.java localhost 50000 <username>" -n -r results/ref_results.json
 ```
+
 ## Author
 Justin Bedwany 46598634
