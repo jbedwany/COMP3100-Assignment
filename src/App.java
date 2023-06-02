@@ -160,7 +160,7 @@ public class App {
         try {
             toServer.write((message + "\n").getBytes());
             toServer.flush();
-            System.out.println("SENT: " + message);
+            // System.out.println("SENT: " + message);
         } catch (IOException e) {
             System.out.println("Exception when sending message " + message + ": " + e);
         }
@@ -169,7 +169,7 @@ public class App {
     static String receiveMessage(BufferedReader fromServer) {
         try {
             String message = fromServer.readLine();
-            System.out.println("RCVD: " + message);
+            // System.out.println("RCVD: " + message);
             return message;
         } catch (IOException e) {
             System.out.println("Exception when reading message: " + e);
