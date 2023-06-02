@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class App {
     public static void main(String[] args) {
@@ -42,6 +43,7 @@ public class App {
             // Main job scheduling functionality
             int roundRobinIndex = 0; 
             Server[] largestServers = null;
+            ArrayList<Job> jobsInProgress = new ArrayList<Job>();
             while(!received.substring(0,4).equals("NONE")) {
                 if(received.substring(0,4).equals("JOBN")) {
                     Job currentJob = new Job(received);
@@ -61,9 +63,14 @@ public class App {
                             sendMessage(toServer, "REDY");
                             received = receiveMessage(fromServer);
                             break;
-                        default:
-                            System.out.println("Error with mode selection.");
+                        case "ott":
+                            jobsInProgress.add(currentJob);
+                            scheduleOTT(fromServer, toServer, currentJob);
+
                             break;
+                        default:
+                            System.out.println("Error with mode selection - mode " + mode + " not found");
+                            return;
                     }
                 } else if(received.substring(0,4).equals("JCPL")) {
                     sendMessage(toServer, "REDY");
@@ -87,7 +94,7 @@ public class App {
         try {
             toServer.write((message + "\n").getBytes());
             toServer.flush();
-            System.out.println("SENT: " + message);
+            //System.out.println("SENT: " + message);
         } catch (IOException e) {
             System.out.println("Exception when sending message " + message + ": " + e);
         }
@@ -96,7 +103,7 @@ public class App {
     static String receiveMessage(BufferedReader fromServer) {
         try {
             String message = fromServer.readLine();
-            System.out.println("RCVD: " + message);
+            //System.out.println("RCVD: " + message);
             return message;
         } catch (IOException e) {
             System.out.println("Exception when reading message: " + e);
@@ -166,5 +173,9 @@ public class App {
             Server firstCapable = new Server(received);
             sendMessage(toServer, "SCHD " + currentJob.id + " " + firstCapable.type + " " + firstCapable.id);
             receiveMessage(fromServer);
+    }
+    
+    static void scheduleOTT(BufferedReader fromServer, DataOutputStream toServer, Job currentJob) {
+        // Get list of available servers
     }
 }
