@@ -15,6 +15,15 @@ public class Job {
         this.disk = Integer.parseInt(job.split(" ")[6]);
     }
 
+    public Job() {
+        this.time = 0;
+        this.id = 0;
+        this.runtimeEst = 0;
+        this.cores = 0;
+        this.mem = 0;
+        this.disk = 0;
+    }
+
     public String toString() {
         return "Time: " + time + ", ID: " + id + ", Runtime: " + runtimeEst + ", Cores: " + cores + ", Memory: " + mem + ", Disk: " + disk;
     }

@@ -15,12 +15,6 @@ public class App {
         String ipaddr = args[0];
         int port = Integer.parseInt(args[1]);
         String user = args[2];
-        String mode = "lrr";
-        if(args.length == 5) {
-            if("-a".equals(args[3])) {
-                mode = args[4];
-            }
-        }
        
         System.out.println("Connecting to server at " + ipaddr + ":" + port + ".");
         try {
@@ -40,43 +34,107 @@ public class App {
             sendMessage(toServer, "REDY");
             received = receiveMessage(fromServer); 
 
-            // Main job scheduling functionality
-            int roundRobinIndex = 0; 
-            Server[] largestServers = null;
+            // Main job scheduling functionality - optimising turnaround time without sacrificing other metrics too much
             ArrayList<Job> jobsInProgress = new ArrayList<Job>();
-            while(!received.substring(0,4).equals("NONE")) {
-                if(received.substring(0,4).equals("JOBN")) {
-                    Job currentJob = new Job(received);
-                    switch(mode) {
-                        case "lrr":
-                            // Get server details, find largest type
-                            if(largestServers == null) {
-                                largestServers = findLargestServer(toServer, fromServer);
-                            }
-                            roundRobinIndex = scheduleLRR(largestServers, fromServer, toServer, roundRobinIndex, currentJob);
-                            // Request next job command
-                            sendMessage(toServer, "REDY");
-                            received = receiveMessage(fromServer);
-                            break;
-                        case "fc":
-                            scheduleFC(fromServer, toServer, currentJob);
-                            sendMessage(toServer, "REDY");
-                            received = receiveMessage(fromServer);
-                            break;
-                        case "ott":
-                            jobsInProgress.add(currentJob);
-                            scheduleOTT(fromServer, toServer, currentJob);
 
-                            break;
-                        default:
-                            System.out.println("Error with mode selection - mode " + mode + " not found");
-                            return;
-                    }
-                } else if(received.substring(0,4).equals("JCPL")) {
-                    sendMessage(toServer, "REDY");
-                    received = receiveMessage(fromServer); 
+            while(!received.substring(0,4).equals("NONE")) {
+                switch(received.substring(0,4)) {
+                    case "JOBN":
+                        Job currentJob = new Job(received);
+                        jobsInProgress.add(currentJob);
+                        scheduleOTT(fromServer, toServer, currentJob);
+                        break;
+                    case "JCPL":
+                        sendMessage(toServer, "LSTQ GQ *");
+                        received = receiveMessage(fromServer);
+                        System.out.println("hmm1");
+                        int numJobs = Integer.parseInt(received.split(" ")[1]);
+                        sendMessage(toServer, "OK");
+                        if(numJobs > 0) {
+                            for(int i = 0; i < numJobs; i++) {
+                                String[] job = receiveMessage(fromServer).split(" ");
+                                Job queuedJob = new Job();
+                                queuedJob.cores = Integer.parseInt(job[5]);
+                                queuedJob.disk = Integer.parseInt(job[7]);
+                                queuedJob.id = Integer.parseInt(job[0]);
+                                queuedJob.mem = Integer.parseInt(job[6]);
+                                // Request list of servers available to complete job
+                                sendMessage(toServer, "GETS Available " + queuedJob.cores + " " + queuedJob.mem + " " + queuedJob.disk);
+                                int numRecords = Integer.parseInt(receiveMessage(fromServer).split(" ")[1]);
+                                sendMessage(toServer, "OK");
+
+                                if(numRecords > 0) {    // if a capable server is available
+                                    // Receive server list
+                                    received = receiveMessage(fromServer);
+
+                                    // Evaluate best suited server, testing the first one separately to avoid issues with integer initialisation (i.e. initialising fitness and bestfitness to arbitrary nonzero numbers)
+                                    int fitness = Integer.parseInt(received.split(" ")[4]) - queuedJob.cores;
+                                    int bestFitness = fitness;
+                                    Server bestServer = new Server(received);
+
+                                    for(int j = 0; i < numRecords - 1; i++) {
+                                        received = receiveMessage(fromServer);  // get details of each server
+                                        fitness = Integer.parseInt(received.split(" ")[4]) - queuedJob.cores;
+                                        if(fitness < bestFitness) {
+                                            bestFitness = fitness;
+                                            bestServer = new Server(received);
+                                        }
+                                    }
+                                    sendMessage(toServer, "OK");
+                                    receiveMessage(fromServer);
+
+                                    // Schedule job
+                                    sendMessage(toServer, "SCHD " + queuedJob.id + " " + bestServer.type + " " + bestServer.id);
+                                    receiveMessage(fromServer);
+                                }
+                            }
+                        }
+                        break;
+                    case "CHKQ":
+                        sendMessage(toServer, "LSTQ GQ *");
+                        receiveMessage(fromServer);
+                        return;
+                    default:
+                        System.out.println("Command received: " + received.substring(0,4));
+                        break;
                 }
+                sendMessage(toServer, "REDY");
+                received = receiveMessage(fromServer); 
             }
+
+            // while(!received.substring(0,4).equals("NONE")) {
+            //     if(received.substring(0,4).equals("JOBN")) {
+            //         Job currentJob = new Job(received);
+            //         switch(mode) {
+            //             case "lrr":
+            //                 // Get server details, find largest type
+            //                 if(largestServers == null) {
+            //                     largestServers = findLargestServer(toServer, fromServer);
+            //                 }
+            //                 roundRobinIndex = scheduleLRR(largestServers, fromServer, toServer, roundRobinIndex, currentJob);
+            //                 // Request next job command
+            //                 sendMessage(toServer, "REDY");
+            //                 received = receiveMessage(fromServer);
+            //                 break;
+            //             case "fc":
+            //                 scheduleFC(fromServer, toServer, currentJob);
+            //                 sendMessage(toServer, "REDY");
+            //                 received = receiveMessage(fromServer);
+            //                 break;
+            //             case "ott":
+            //                 jobsInProgress.add(currentJob);
+            //                 scheduleOTT(fromServer, toServer, currentJob);
+
+            //                 break;
+            //             default:
+            //                 System.out.println("Error with mode selection - mode " + mode + " not found");
+            //                 return;
+            //         }
+            //     } else if(received.substring(0,4).equals("JCPL")) {
+            //         sendMessage(toServer, "REDY");
+            //         received = receiveMessage(fromServer); 
+            //     }
+            // }
 
             // terminate connection
             sendMessage(toServer, "QUIT");
@@ -94,7 +152,7 @@ public class App {
         try {
             toServer.write((message + "\n").getBytes());
             toServer.flush();
-            //System.out.println("SENT: " + message);
+            System.out.println("SENT: " + message);
         } catch (IOException e) {
             System.out.println("Exception when sending message " + message + ": " + e);
         }
@@ -103,7 +161,7 @@ public class App {
     static String receiveMessage(BufferedReader fromServer) {
         try {
             String message = fromServer.readLine();
-            //System.out.println("RCVD: " + message);
+            System.out.println("RCVD: " + message);
             return message;
         } catch (IOException e) {
             System.out.println("Exception when reading message: " + e);
@@ -111,71 +169,103 @@ public class App {
         }
     }
 
-    static Server[] findLargestServer(DataOutputStream toServer, BufferedReader fromServer) {
-        sendMessage(toServer, "GETS All");
-        String received = receiveMessage(fromServer);
-        int numServers = Integer.parseInt(received.split(" ")[1]);
-        Server[] servers = new Server[numServers];
-        sendMessage(toServer, "OK");
-        // System.out.println("Finding largest server.");
-        int maxCores = 0;
-        String largestServer = "";
-        int numLargest = 0;
+    // static Server[] findLargestServer(DataOutputStream toServer, BufferedReader fromServer) {
+    //     sendMessage(toServer, "GETS All");
+    //     String received = receiveMessage(fromServer);
+    //     int numServers = Integer.parseInt(received.split(" ")[1]);
+    //     Server[] servers = new Server[numServers];
+    //     sendMessage(toServer, "OK");
+    //     // System.out.println("Finding largest server.");
+    //     int maxCores = 0;
+    //     String largestServer = "";
+    //     int numLargest = 0;
         
-        // Identify largest type
-        for(int i = 0; i < numServers; i++) {
-            received = receiveMessage(fromServer);
-            servers[i] = new Server(received);
-            if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
-                maxCores = servers[i].cores; 
-                largestServer = servers[i].type; 
-                numLargest = 0;
-            }
-            if(servers[i].type.equals(largestServer)) {
-                numLargest++;
-            }
-        }
-        // Create list of largest servers
-        Server[] largestServers = new Server[numLargest];
-        int largestServersArrayIndex = 0;                   // added to avoid looping through the new array to find the next empty element each time an element is being added
-        for(int i = 0; i < numServers; i++) {
-            if(servers[i].type.equals(largestServer) && servers[i].state.equals("inactive")) {
-                largestServers[largestServersArrayIndex++] = servers[i];
-            }
-        }
-        sendMessage(toServer, "OK");
-        receiveMessage(fromServer);
-        return largestServers;
-    }
+    //     // Identify largest type
+    //     for(int i = 0; i < numServers; i++) {
+    //         received = receiveMessage(fromServer);
+    //         servers[i] = new Server(received);
+    //         if(servers[i].cores > maxCores && servers[i].state.equals("inactive")) {
+    //             maxCores = servers[i].cores; 
+    //             largestServer = servers[i].type; 
+    //             numLargest = 0;
+    //         }
+    //         if(servers[i].type.equals(largestServer)) {
+    //             numLargest++;
+    //         }
+    //     }
+    //     // Create list of largest servers
+    //     Server[] largestServers = new Server[numLargest];
+    //     int largestServersArrayIndex = 0;                   // added to avoid looping through the new array to find the next empty element each time an element is being added
+    //     for(int i = 0; i < numServers; i++) {
+    //         if(servers[i].type.equals(largestServer) && servers[i].state.equals("inactive")) {
+    //             largestServers[largestServersArrayIndex++] = servers[i];
+    //         }
+    //     }
+    //     sendMessage(toServer, "OK");
+    //     receiveMessage(fromServer);
+    //     return largestServers;
+    // }
 
 
-    static int scheduleLRR(Server[] largestServers, BufferedReader fromServer, DataOutputStream toServer, int roundRobinIndex, Job currentJob) {
-        // Schedule jobs using LRR
-        sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
-        if(++roundRobinIndex >= largestServers.length) {
-            roundRobinIndex = 0;
-        }
-        receiveMessage(fromServer);
-        return roundRobinIndex;
-    }
+    // static int scheduleLRR(Server[] largestServers, BufferedReader fromServer, DataOutputStream toServer, int roundRobinIndex, Job currentJob) {
+    //     // Schedule jobs using LRR
+    //     sendMessage(toServer, "SCHD " + currentJob.id + " " + largestServers[roundRobinIndex].type + " " + largestServers[roundRobinIndex].id);
+    //     if(++roundRobinIndex >= largestServers.length) {
+    //         roundRobinIndex = 0;
+    //     }
+    //     receiveMessage(fromServer);
+    //     return roundRobinIndex;
+    // }
 
-    static void scheduleFC(BufferedReader fromServer, DataOutputStream toServer, Job currentJob) {
-            sendMessage(toServer, "GETS Capable " + currentJob.cores + " " + currentJob.mem + " " + currentJob.disk);
-            int numRecords = Integer.parseInt(receiveMessage(fromServer).split(" ")[1]);
-            sendMessage(toServer, "OK");
-            String received = receiveMessage(fromServer);
-            System.out.println(received);
-            for(int i = 0; i < numRecords - 1; i++) {
-                receiveMessage(fromServer);
-            }
-            sendMessage(toServer, "OK");
-            receiveMessage(fromServer);
-            Server firstCapable = new Server(received);
-            sendMessage(toServer, "SCHD " + currentJob.id + " " + firstCapable.type + " " + firstCapable.id);
-            receiveMessage(fromServer);
-    }
+    // static void scheduleFC(BufferedReader fromServer, DataOutputStream toServer, Job currentJob) {
+    //         sendMessage(toServer, "GETS Capable " + currentJob.cores + " " + currentJob.mem + " " + currentJob.disk);
+    //         int numRecords = Integer.parseInt(receiveMessage(fromServer).split(" ")[1]);
+    //         sendMessage(toServer, "OK");
+    //         String received = receiveMessage(fromServer);
+    //         System.out.println(received);
+    //         for(int i = 0; i < numRecords - 1; i++) {
+    //             receiveMessage(fromServer);
+    //         }
+    //         sendMessage(toServer, "OK");
+    //         receiveMessage(fromServer);
+    //         Server firstCapable = new Server(received);
+    //         sendMessage(toServer, "SCHD " + currentJob.id + " " + firstCapable.type + " " + firstCapable.id);
+    //         receiveMessage(fromServer);
+    // }
     
     static void scheduleOTT(BufferedReader fromServer, DataOutputStream toServer, Job currentJob) {
-        // Get list of available servers
+        // Request list of servers available to complete job
+        sendMessage(toServer, "GETS Available " + currentJob.cores + " " + currentJob.mem + " " + currentJob.disk);
+        int numRecords = Integer.parseInt(receiveMessage(fromServer).split(" ")[1]);
+        sendMessage(toServer, "OK");
+
+        if(numRecords > 0) {    // if a capable server is available
+            // Receive server list
+            String received = receiveMessage(fromServer);
+
+            // Evaluate best suited server, testing the first one separately to avoid issues with integer initialisation (i.e. initialising fitness and bestfitness to arbitrary nonzero numbers)
+            int fitness = Integer.parseInt(received.split(" ")[4]) - currentJob.cores;
+            int bestFitness = fitness;
+            Server bestServer = new Server(received);
+
+            for(int i = 0; i < numRecords - 1; i++) {
+                received = receiveMessage(fromServer);  // get details of each server
+                fitness = Integer.parseInt(received.split(" ")[4]) - currentJob.cores;
+                if(fitness < bestFitness) {
+                    bestFitness = fitness;
+                    bestServer = new Server(received);
+                }
+            }
+            sendMessage(toServer, "OK");
+            receiveMessage(fromServer);
+
+            // Schedule job
+            sendMessage(toServer, "SCHD " + currentJob.id + " " + bestServer.type + " " + bestServer.id);
+            receiveMessage(fromServer);
+        } else {
+            receiveMessage(fromServer);
+            sendMessage(toServer, "ENQJ GQ");
+            receiveMessage(fromServer);
+        }
     }
 }
