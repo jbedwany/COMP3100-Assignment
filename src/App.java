@@ -37,11 +37,11 @@ public class App {
             // Main job scheduling functionality - optimising turnaround time without sacrificing other metrics too much
             while(!received.substring(0,4).equals("NONE")) {
                 switch(received.substring(0,4)) {
-                    case "JOBN":
+                    case "JOBN", "JOBP":
                         Job currentJob = new Job(received);
                         scheduleOTT(fromServer, toServer, currentJob);
                         break;
-                    case "JCPL":
+                    case "JCPL", "CHKQ":
                         sendMessage(toServer, "LSTQ GQ *");
                         received = receiveMessage(fromServer);
                         int numJobs = Integer.parseInt(received.split(" ")[1]);
@@ -94,16 +94,14 @@ public class App {
                                     // Schedule job
                                     sendMessage(toServer, "SCHD " + job.id + " " + bestServer.type + " " + bestServer.id);
                                     receiveMessage(fromServer);
+                                } else {
+                                    receiveMessage(fromServer);
                                 }
                             });
                         } else {
                             receiveMessage(fromServer);
                         }
                         break;
-                    case "CHKQ":
-                        sendMessage(toServer, "LSTQ GQ *");
-                        receiveMessage(fromServer);
-                        return;
                     default:
                         System.out.println("Command received: " + received.substring(0,4));
                         break;
