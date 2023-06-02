@@ -5,6 +5,7 @@ public class Job {
     public int cores;
     public int mem;
     public int disk;
+    public int queuePosition;
 
     public Job(String job) {
         this.time = Integer.parseInt(job.split(" ")[1]);
@@ -13,6 +14,7 @@ public class Job {
         this.cores = Integer.parseInt(job.split(" ")[4]);
         this.mem = Integer.parseInt(job.split(" ")[5]);
         this.disk = Integer.parseInt(job.split(" ")[6]);
+        this.queuePosition = 0;
     }
 
     public Job() {
@@ -22,6 +24,7 @@ public class Job {
         this.cores = 0;
         this.mem = 0;
         this.disk = 0;
+        this.queuePosition = 0;
     }
 
     public String toString() {

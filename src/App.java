@@ -35,22 +35,19 @@ public class App {
             received = receiveMessage(fromServer); 
 
             // Main job scheduling functionality - optimising turnaround time without sacrificing other metrics too much
-            ArrayList<Job> jobsInProgress = new ArrayList<Job>();
-
             while(!received.substring(0,4).equals("NONE")) {
                 switch(received.substring(0,4)) {
                     case "JOBN":
                         Job currentJob = new Job(received);
-                        jobsInProgress.add(currentJob);
                         scheduleOTT(fromServer, toServer, currentJob);
                         break;
                     case "JCPL":
                         sendMessage(toServer, "LSTQ GQ *");
                         received = receiveMessage(fromServer);
-                        System.out.println("hmm1");
                         int numJobs = Integer.parseInt(received.split(" ")[1]);
                         sendMessage(toServer, "OK");
                         if(numJobs > 0) {
+                            ArrayList<Job> queuedJobs = new ArrayList<Job>();
                             for(int i = 0; i < numJobs; i++) {
                                 String[] job = receiveMessage(fromServer).split(" ");
                                 Job queuedJob = new Job();
@@ -58,36 +55,42 @@ public class App {
                                 queuedJob.disk = Integer.parseInt(job[7]);
                                 queuedJob.id = Integer.parseInt(job[0]);
                                 queuedJob.mem = Integer.parseInt(job[6]);
-                                // Request list of servers available to complete job
-                                sendMessage(toServer, "GETS Available " + queuedJob.cores + " " + queuedJob.mem + " " + queuedJob.disk);
-                                int numRecords = Integer.parseInt(receiveMessage(fromServer).split(" ")[1]);
+                                queuedJobs.add(queuedJob);
+                            }
+                            sendMessage(toServer, "OK");
+                            receiveMessage(fromServer);
+                            // Request list of servers available to complete job
+                            queuedJobs.forEach((job) -> {
+                                sendMessage(toServer, "GETS Available " + job.cores + " " + job.mem + " " + job.disk);
+                                String message = receiveMessage(fromServer);
+                                int numRecords = Integer.parseInt(message.split(" ")[1]);
                                 sendMessage(toServer, "OK");
 
                                 if(numRecords > 0) {    // if a capable server is available
                                     // Receive server list
-                                    received = receiveMessage(fromServer);
+                                    message = receiveMessage(fromServer);
 
                                     // Evaluate best suited server, testing the first one separately to avoid issues with integer initialisation (i.e. initialising fitness and bestfitness to arbitrary nonzero numbers)
-                                    int fitness = Integer.parseInt(received.split(" ")[4]) - queuedJob.cores;
+                                    int fitness = Integer.parseInt(message.split(" ")[4]) - job.cores;
                                     int bestFitness = fitness;
-                                    Server bestServer = new Server(received);
+                                    Server bestServer = new Server(message);
 
-                                    for(int j = 0; i < numRecords - 1; i++) {
-                                        received = receiveMessage(fromServer);  // get details of each server
-                                        fitness = Integer.parseInt(received.split(" ")[4]) - queuedJob.cores;
+                                    for(int j = 0; j < numRecords - 1; j++) {
+                                        message = receiveMessage(fromServer);  // get details of each server
+                                        fitness = Integer.parseInt(message.split(" ")[4]) - job.cores;
                                         if(fitness < bestFitness) {
                                             bestFitness = fitness;
-                                            bestServer = new Server(received);
+                                            bestServer = new Server(message);
                                         }
                                     }
                                     sendMessage(toServer, "OK");
                                     receiveMessage(fromServer);
 
                                     // Schedule job
-                                    sendMessage(toServer, "SCHD " + queuedJob.id + " " + bestServer.type + " " + bestServer.id);
+                                    sendMessage(toServer, "SCHD " + job.id + " " + bestServer.type + " " + bestServer.id);
                                     receiveMessage(fromServer);
                                 }
-                            }
+                            });
                         }
                         break;
                     case "CHKQ":
