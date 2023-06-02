@@ -55,6 +55,7 @@ public class App {
                                 queuedJob.disk = Integer.parseInt(job[7]);
                                 queuedJob.id = Integer.parseInt(job[0]);
                                 queuedJob.mem = Integer.parseInt(job[6]);
+                                queuedJob.queuePosition = i;
                                 queuedJobs.add(queuedJob);
                             }
                             sendMessage(toServer, "OK");
@@ -85,12 +86,18 @@ public class App {
                                     }
                                     sendMessage(toServer, "OK");
                                     receiveMessage(fromServer);
+                                    
+                                    // Dequeue job
+                                    sendMessage(toServer, "DEQJ GQ " + job.queuePosition);
+                                    receiveMessage(fromServer);
 
                                     // Schedule job
                                     sendMessage(toServer, "SCHD " + job.id + " " + bestServer.type + " " + bestServer.id);
                                     receiveMessage(fromServer);
                                 }
                             });
+                        } else {
+                            receiveMessage(fromServer);
                         }
                         break;
                     case "CHKQ":
